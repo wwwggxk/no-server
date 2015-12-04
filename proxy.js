@@ -6,25 +6,43 @@ var http = require('http'),
     url = require('url'),
     querystring = require('querystring'),
 
+    // 服务器配置
     defaultIndex = 'index.html',
     defaultHost = 'http://localhost',
-    defaultPort = 9797,
+    defaultPort = 8989,
 
+    testApiPath = '/ipa',
+
+    /*
+     * 代理配置
+     * 支持http(s)://www.domain.com/api?params=value
+     * 或者http(s)://www.domain.com/api?action=proxy&params=value
+     */
     proxyConfig = {
-        pathname: '/proxy',
-        action: 'https://www.tigerbrokers.com/api'
+        '/v1': 'https://api1.server1.com/v1',
+        '/v2': 'https://api2.server2.com/v2'
     },
 
-    server;
+    server, i;
 
+for (i = 0; i < process.argv.length; i++) {
+    if (process.argv[i] === '--port' && (i + 1) < process.argv.length) {
+        defaultPort = process.argv[i + 1];
+    }
+}
+
+/*********************************************************************代理请求*/
 function Request(options) {
     this.options = options;
 }
 
-Request.parseOptions = function (target) {
+Request.parseOptions = function (target,route) {
     // reg: ['匹配串', '代理地址', 'url参数可为undefined(有&)', '同前(无&)']
-    var reg=/action=([^&]+)(&(.+))*/, match, parsedUrl = url.parse(target),
-        options, prefix = proxyConfig.action, suffix = '', query;
+    var reg=/action=([^&]+)(&(.+))*/,
+        parsedUrl = url.parse(target),
+        prefix = proxyConfig[route],
+        suffix = '',
+        match, options, query;
 
     console.log('代理参数解析...');
     if (reg.test(parsedUrl.query)) {
@@ -32,8 +50,8 @@ Request.parseOptions = function (target) {
         prefix = decodeURIComponent(match[1]);
         match[3] && (query = match[3]);
     } else {
-        var index = parsedUrl.pathname.indexOf(proxyConfig.pathname);
-        suffix = parsedUrl.pathname.slice(index + proxyConfig.pathname.length);
+        suffix = parsedUrl.pathname.slice(parsedUrl.pathname.indexOf(route) +
+            route.length);
         query = parsedUrl.query;
     }
 
@@ -56,7 +74,9 @@ Request.prototype.request = function (callback, postData) {
     console.log(this.options);
     start = +new Date();
     request = agent.request(this.options, function (res) {
-        console.log('代理请求成功 ' + res.statusCode + ' (' + (+new Date() - start)+'毫秒)');
+        console.log('代理请求成功 ' +
+            res.statusCode + ' (' + (+new Date() - start)+'毫秒)');
+
         callback(res);
     });
 
@@ -70,22 +90,23 @@ Request.prototype.request = function (callback, postData) {
     request.end();
 };
 
+/*************************************************************************路由*/
 function Router (path, handler) {
     this.routes = {};
 }
 
 Router.prototype.when = function (url, handler) {
-    this.routes[url] = handler;
+    this.routes[url] = {route: url, handle: handler};
     return this;
 };
 
 Router.prototype.other = function (handler) {
-    this.defaultHandler = handler;
+    this.defaultHandler = {route: '*', handle: handler};
     return this;
 };
 
 Router.prototype.add = function (url, handler) {
-    this.routes[url] = handler;
+    this.routes[url] = {route: url, handle: handler};
     return this;
 };
 
@@ -106,10 +127,11 @@ Router.prototype.getHandler = function (pathname) {
     return this.defaultHandler;
 };
 
+/******************************************************************************/
 var Server = (function () {
     var routes = [];
 
-    return function (port, host) {
+    return function () {
         var _server, self = this;
         this.router = new Router();
         this.start = function () {
@@ -118,24 +140,25 @@ var Server = (function () {
                 if (!handler) {
                     return static(req, res);
                 }
-                handler(req, res);
+                handler.handle(req, res, handler.route);
 
-            }).listen(port || defaultPort);
+            }).listen(defaultPort);
         };
+        console.log('server listen on: http://localhost:' + defaultPort);
     };
 })();
 
-(server = new Server())
-    .router
-    .when('/api', processProxy)
-    .when('/ipa', processApi)
-    .other(static);
-
+server = new Server();
+for(var pathname in proxyConfig) {
+    server.router.when(pathname, processProxy);
+}
+server.router.when(testApiPath, processApi);
+server.router.other(static);
 server.start();
 
 
 // 代理处理
-function processProxy(req, res) {
+function processProxy(req, res, route) {
     var postData = '';
     req.on('data', function (data) {
         postData += data;
@@ -148,7 +171,7 @@ function processProxy(req, res) {
     req.on('end', function () {
         var options, agent, current, request, parsedUrl;
 
-        options = Request.parseOptions(req.url);
+        options = Request.parseOptions(req.url, route);
         options.method = req.method;
         request = new Request(options);
         options.headers = {
@@ -178,7 +201,7 @@ function processProxy(req, res) {
 }
 
 // 处理请求, 如果是目录则请求定义好的defaults即index.html文件
-function static(req, res, pathname) {
+function static(req, res, route, pathname) {
     pathname = pathname || path.normalize('.' + url.parse(req.url).pathname);
 
     fs.exists(pathname, function (exists) {
@@ -200,7 +223,7 @@ function static(req, res, pathname) {
                 }
 
                 if (stat.isDirectory()) {
-                    return static(req, res, path.normalize(path.join(pathname, defaultIndex)));
+                    return static(req, res, route, path.normalize(path.join(pathname, defaultIndex)));
                 }
 
                 res.writeHead('200');
