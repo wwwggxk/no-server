@@ -6,8 +6,8 @@
 把proxy.js放于静态文件开发根目录中， 运行:
 
 ```
-node proxy.js
+node proxy.js [--port 9898]
 ```
 
 
-然后可能访问http://localhost:9797使用
+然后可能访问http://localhost:8989使用
