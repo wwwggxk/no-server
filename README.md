@@ -1,6 +1,6 @@
-# 基于node的简单server + proxy + write + livereload
+# 基于node的简单server + proxy + rewrite + livereload
 
-简单前端静态服务器, 并实现跨域请求, websocket及浏览器实时刷新，文件重定向
+简单前端静态服务器, 并能跨域请求, websocket及浏览器实时刷新，文件重定向
 
 ## 依赖
 
@@ -15,7 +15,7 @@ node proxy.js [--port 9898] [--root ./]
 ```
 
 
-然后可能访问http://localhost:8989使用
+然后可以访问http://localhost:8989使用
 
 2. 通过node引用包
 
@@ -27,7 +27,7 @@ var qserver = new Qserver(port, {
 });
 
 qserver.proxy('/api', 'https://target.server.com/api');
-qserver.write('/bower_components', '/../bower_components');
+qserver.rewrite('/bower_components', '/../bower_components');
 qserver.start();
 
 qserver.pushCss(); // 刷新css
