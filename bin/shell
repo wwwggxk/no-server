@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var YesServer = require('../lib/yes-server'),
+    root = '.',
+    documentIndex = 'index.html',
+    host = 'http://localhost',
+    port = 9527,
+    i;
+
+if (process.argv.indexOf('--help') > -1) {
+    console.log([
+        'usage: yes-server [options]',
+        'options:',
+        '--port         port used to serve, default 9527',
+        '--root         document root path, default ./'
+    ].join('\n'));
+    return;
+}
+
+// 解析参数
+for (i = 2; i < process.argv.length; i++) {
+    if (process.argv[i] === '--port' && (i + 1) < process.argv.length) {
+        port = process.argv[i + 1];
+    }
+
+    if (process.argv[i] === '--root' && (i + 1) < process.argv.length) {
+        root = process.argv[i + 1];
+    }
+}
+
+var server = YesServer.create(root, {
+    port: port,
+    indexFile: documentIndex
+}), pathname;
+
+server.start();
