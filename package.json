@@ -1,6 +1,6 @@
 {
-  "name": "no-server",
-  "version": "1.0.15",
+  "name": "yes-server",
+  "version": "1.0.3",
   "description": "a node debug server used for front-end developers",
   "preferGlobal": "true",
   "main": "index.js",
