@@ -9,7 +9,7 @@
 
 - websocket及浏览器实时刷新(websocket & livereload)
 
-- 文件重定向(path rewrite)
+- 文件重定向(path local rewrite)
 
 - (__TODO__)api数据模拟(data mock)
 
@@ -25,17 +25,18 @@ npm install yes-server
 
 ```
 {
-    port: 9527,
-    host: 'http://localhost',
-    root: './',
-    documentFile: 'index.html'
+    port: 9527,                 // port
+    host: 'http://localhost',   // server domain
+    root: './',                 // server serve path
+    indexFile: 'index.html',    // server default index file
+    browse: false               // whether open in browser automatically
 }
 ```
 
 **直接使用(global usage)**
 
 ```
-yes-server [--port 9527] [--root ./] path
+yes-server [--port 9527] [--root .]
 ```
 
 
@@ -44,21 +45,23 @@ yes-server [--port 9527] [--root ./] path
 **通过module使用(module usage)**
 
 ```
-YesServer = require('yes-server');
+var YesServer = require('yes-server');
 
-// YesServer.create(port, options)
-var server = YesServer.create(path, {
-    port: '9527'
-    root: './'
+// YesServer.create(root, options)
+var server = YesServer.create('.', {
+    port: 9527
 });
 
 // api proxy(cross domain)
 server.proxy('/api', 'https://target.server.com/api');
 
-// path rewrite
-server.rewrite('/bower_components', '/../bower_components');
+// path local rewrite
+server.rewrite('/bower_components', '../bower_components');
 
-server.start();
+server.start().then(function (serverInstance) {
+    // serverInstance.close();
+    // ...
+});
 server.pushCss(); // reload css
 server.pushAll(); // reload page
 ```
@@ -70,3 +73,6 @@ server.pushAll(); // reload page
 
 - websocket
 
+- q
+
+- lodash

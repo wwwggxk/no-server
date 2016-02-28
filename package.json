@@ -1,6 +1,6 @@
 {
-  "name": "yes-server",
-  "version": "1.0.2",
+  "name": "no-server",
+  "version": "1.0.15",
   "description": "a node debug server used for front-end developers",
   "preferGlobal": "true",
   "main": "index.js",
@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "event-stream": "^3.3.2",
+    "lodash": "^4.5.1",
+    "q": "^1.4.1",
     "websocket": "^1.0.22"
   },
   "engines": {

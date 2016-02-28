@@ -3,11 +3,12 @@
 'use strict';
 
 var YesServer = require('../lib/yes-server'),
-    root = '.',
-    documentIndex = 'index.html',
+    root = process.cwd(),
+    path = require('path'),
+    indexFile = 'index.html',
     host = 'http://localhost',
     port = 9527,
-    i;
+    isAbsolute, i, server;
 
 if (process.argv.indexOf('--help') > -1) {
     console.log([
@@ -19,7 +20,7 @@ if (process.argv.indexOf('--help') > -1) {
     return;
 }
 
-// 解析参数
+// parse parameters
 for (i = 2; i < process.argv.length; i++) {
     if (process.argv[i] === '--port' && (i + 1) < process.argv.length) {
         port = process.argv[i + 1];
@@ -30,9 +31,12 @@ for (i = 2; i < process.argv.length; i++) {
     }
 }
 
-var server = YesServer.create(root, {
+isAbsolute = path.resolve(root) == path.normalize(root);
+root = isAbsolute ? path.normalize(root) : path.join(process.cwd(), root);
+
+server = YesServer.create(root, {
     port: port,
-    indexFile: documentIndex
-}), pathname;
+    indexFile: indexFile
+});
 
 server.start();
