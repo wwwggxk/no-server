@@ -1,5 +1,5 @@
 # 基于node的前端开发调试服务器
-**yes-server**: node-based debug server
+**no-server**: node-based debug server
 
 ## 功能(Features)
 
@@ -18,7 +18,7 @@
 **安装(installation)**
 
 ```
-npm install yes-server
+npm install no-server
 ```
 
 **默认值(options)**
@@ -36,7 +36,7 @@ npm install yes-server
 **直接使用(global usage)**
 
 ```
-yes-server [--port 9527] [--root .]
+no-server [--port 9527] [--root .]
 ```
 
 
@@ -45,10 +45,10 @@ yes-server [--port 9527] [--root .]
 **通过module使用(module usage)**
 
 ```
-var YesServer = require('yes-server');
+var NoServer = require('no-server');
 
-// YesServer.create(root, options)
-var server = YesServer.create('.', {
+// NoServer.create(root, options)
+var server = NoServer.create('.', {
     port: 9527
 });
 

@@ -2,7 +2,7 @@
 
 'use strict';
 
-var YesServer = require('../lib/yes-server'),
+var NoServer = require('../lib/no-server'),
     root = process.cwd(),
     path = require('path'),
     indexFile = 'index.html',
@@ -12,7 +12,7 @@ var YesServer = require('../lib/yes-server'),
 
 if (process.argv.indexOf('--help') > -1) {
     console.log([
-        'usage: yes-server [options]',
+        'usage: no-server [options]',
         'options:',
         '--port         port used to serve, default 9527',
         '--root         document root path, default ./'
@@ -34,7 +34,7 @@ for (i = 2; i < process.argv.length; i++) {
 isAbsolute = path.resolve(root) == path.normalize(root);
 root = isAbsolute ? path.normalize(root) : path.join(process.cwd(), root);
 
-server = YesServer.create(root, {
+server = NoServer.create(root, {
     port: port,
     indexFile: indexFile
 });

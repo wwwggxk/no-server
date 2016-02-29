@@ -1,1 +1,1 @@
-module.exports = require('./lib/yes-server');
+module.exports = require('./lib/no-server');

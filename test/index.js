@@ -1,16 +1,16 @@
-var YesServer = require('../lib/yes-server'),
+var NoServer = require('../lib/no-server'),
     assert = require('assert'),
     request = require('request'),
     childProcess = require('child_process'),
     server;
 
-describe('yes-server', function () {
+describe('no-server', function () {
     it('should return "port is used" when specific port is used',
             function (done) {
 
-        var server = YesServer.create('.').start();
+        var server = NoServer.create('.').start();
         server.then(function (instance) {
-            var serverB = YesServer.create('.').start();
+            var serverB = NoServer.create('.').start();
             serverB.then(function(instanceB) {
             }, function (msg) {
                 instance.close();
@@ -21,12 +21,12 @@ describe('yes-server', function () {
     });
 
     it('should listen 9527 and access default index.html', function (done) {
-        var server = YesServer.create('./resources/a').start();
+        var server = NoServer.create('./resources/a').start();
         server.then(function (instance) {
             request('http://localhost:9527', function (err, res, body) {
                 instance.close();
                 assert.equal(res.statusCode, 200);
-                assert.strictEqual(body, 'yes-server-a\n');
+                assert.strictEqual(body, 'no-server-a\n');
                 done();
             });
         });
@@ -35,7 +35,7 @@ describe('yes-server', function () {
     it('should return 404 status code when requesting file that is not exist ',
             function (done) {
 
-        var server = YesServer.create('./resources').start();
+        var server = NoServer.create('./resources').start();
         server.then(function (instance) {
             request('http://localhost:9527/404.html', function (err, res, body) {
                 instance.close();
@@ -46,25 +46,25 @@ describe('yes-server', function () {
     });
 
     it('should access file relative to the target path', function (done) {
-        var server = YesServer.create('./resources/a', {
+        var server = NoServer.create('./resources/a', {
             port: 9528
         });
         server.rewrite('/', '../b');
         server.start().then(function (instance) {
             request('http://localhost:9528', function (err, res, body) {
                 instance.close();
-                assert.equal(body, 'yes-server-b\n');
+                assert.equal(body, 'no-server-b\n');
                 done();
             });
         });
     });
 
     it('should access proxy url when path matches patterns', function (done) {
-        var server = YesServer.create('./resources/a', {
+        var server = NoServer.create('./resources/a', {
             port: 9528
         });
         server.start().then(function (instanceA) {
-            var serverB = YesServer.create('./resources/b', {
+            var serverB = NoServer.create('./resources/b', {
                 port: 9529
             });
 
@@ -73,7 +73,7 @@ describe('yes-server', function () {
                 request('http://localhost:9528/', function (err, res, body) {
                     instanceA.close();
                     instanceB.close();
-                    assert.equal(body, 'yes-server-a\n');
+                    assert.equal(body, 'no-server-a\n');
                     done();
                 });
             });
@@ -83,7 +83,7 @@ describe('yes-server', function () {
     it('should get websocket data "css" when server invoke reloadCss function',
             function (done) {
 
-        var server = YesServer.create('./resources');
+        var server = NoServer.create('./resources');
         server.start().then(function (instance) {
             var WebSocketClient = require('websocket').client,
                 client = new WebSocketClient();
@@ -105,7 +105,7 @@ describe('yes-server', function () {
     it('should get websocket data "all" when server invoke reloadAll function',
             function (done) {
 
-        var server = YesServer.create('./resources');
+        var server = NoServer.create('./resources');
         server.start().then(function (instance) {
             var WebSocketClient = require('websocket').client,
                 client = new WebSocketClient();
@@ -124,7 +124,7 @@ describe('yes-server', function () {
         });
     });
 
-    it('should access default path "." when used as global command yes-server',
+    it('should access default path "." when used as global command no-server',
             function (done) {
 
         var binPath = path.join(__dirname, '../bin/shell'),
@@ -139,14 +139,14 @@ describe('yes-server', function () {
                 flag = false;
                 request('http://localhost:9527/', function (err, res, body) {
                     result.kill('SIGHUP');
-                    assert.equal(body, 'yes-server-default\n');
+                    assert.equal(body, 'no-server-default\n');
                     done();
                 });
             }
         });
     });
 
-    it('should access specific path when used as global command yes-server',
+    it('should access specific path when used as global command no-server',
             function (done) {
 
         var binPath = path.join(__dirname, '../bin/shell'),
@@ -162,14 +162,14 @@ describe('yes-server', function () {
                 flag = false;
                 request('http://localhost:9527/', function (err, res, body) {
                     result.kill('SIGHUP');
-                    assert.equal(body, 'yes-server-a\n');
+                    assert.equal(body, 'no-server-a\n');
                     done();
                 });
             }
         });
     });
 
-    it('should access specific port when used as global command yes-server',
+    it('should access specific port when used as global command no-server',
             function (done) {
 
         var binPath = path.join(__dirname, '../bin/shell'),
@@ -185,7 +185,7 @@ describe('yes-server', function () {
                 flag = false;
                 request('http://localhost:9528/', function (err, res, body) {
                     result.kill('SIGHUP');
-                    assert.equal(body, 'yes-server-default\n');
+                    assert.equal(body, 'no-server-default\n');
                     done();
                 });
             }
