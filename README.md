@@ -58,10 +58,16 @@ server.proxy('/api', 'https://target.server.com/api');
 // path local rewrite
 server.rewrite('/bower_components', '../bower_components');
 
+// chaining invocation
+server
+.proxy('/api', 'https://target.server.com/api')
+.rewrite('/bower_components', '../bower_components');
+
 server.start().then(function (serverInstance) {
     // serverInstance.close();
     // ...
 });
+
 server.pushCss(); // reload css
 server.pushAll(); // reload page
 ```

@@ -124,6 +124,19 @@ describe('no-server', function () {
         });
     });
 
+    it('should return server instance after function chaining invocation',
+            function () {
+
+        var server = NoServer.create('./resources'),
+            serverA = server.proxy('/', '/'),
+            serverB = serverA.rewrite('/a', '../b');
+
+        assert.deepEqual(server, serverA);
+        assert.deepEqual(serverA, serverB);
+        assert.deepEqual(server, serverB);
+
+    });
+
     it('should access default path "." when used as global command no-server',
             function (done) {
 
