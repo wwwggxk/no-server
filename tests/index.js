@@ -1,10 +1,26 @@
-var NoServer = require('../lib/no-server'),
-    assert = require('assert'),
+var assert = require('assert'),
     request = require('request'),
-    childProcess = require('child_process'),
-    server;
+    childProcess = require('child_process');
 
-describe('no-server', function () {
+describe('no-server module', function () {
+    var NoServerModule = require('../index.js');
+    it('should serve default "index.html" file when used as module',
+            function (done) {
+
+        var server = NoServerModule.create('.').start();
+        server.then(function (instance) {
+            request('http://localhost:9527', function (err, res, body) {
+                instance.close();
+                assert.equal(body, 'no-server-default\n');
+                done();
+            });
+        });
+    });
+});
+
+describe('no-server lib', function () {
+    var NoServer = require('../lib/no-server');
+
     it('should return "port is used" when specific port is used',
             function (done) {
 
@@ -158,7 +174,9 @@ describe('no-server', function () {
             }
         });
     });
+});
 
+describe('no-server global', function () {
     it('should access specific path when used as global command no-server',
             function (done) {
 
@@ -204,4 +222,5 @@ describe('no-server', function () {
             }
         });
     });
+
 });
