@@ -2,7 +2,7 @@
 
 'use strict';
 
-var NoServer = require('../lib/no-server'),
+var NoServer = require('../lib/no-server')(process.cwd()),
     root = process.cwd(),
     path = require('path'),
     indexFile = 'index.html',

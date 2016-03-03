@@ -1,5 +1,6 @@
 var assert = require('assert'),
     request = require('request'),
+    path = require('path'),
     childProcess = require('child_process');
 
 describe('no-server module', function () {
@@ -19,7 +20,7 @@ describe('no-server module', function () {
 });
 
 describe('no-server lib', function () {
-    var NoServer = require('../lib/no-server');
+    var NoServer = require('../lib/no-server')(module.filename);
 
     it('should return "port is used" when specific port is used',
             function (done) {
