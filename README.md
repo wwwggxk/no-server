@@ -8,6 +8,7 @@
 - 跨域请求(proxy)
 
 - websocket及浏览器实时刷新(websocket & livereload)
+    - 可在 __gulp__ 中使用
 
 - 文件重定向(path local rewrite)
 
@@ -18,7 +19,7 @@
 **安装(installation)**
 
 ```
-npm install no-server
+npm install [-g] no-server
 ```
 
 **默认值(options)**
@@ -68,8 +69,22 @@ server.start().then(function (serverInstance) {
     // ...
 });
 
-server.pushCss(); // reload css
-server.pushAll(); // reload page
+server.reloadCss(); // reload css
+server.reloadAll(); // reload page
+
+// used in gulp
+var gulp = require('gulp');
+gulp.task('css', function() {
+    gulp.src('css/**/*.css')
+        .pipe(gulp.dest('dist/css'))
+        .pipe(server.streamReloadCss());
+});
+
+gulp.task('html', function() {
+    gulp.src('views/**/*.html')
+        .pipe(gulp.dest('dist/html'))
+        .pipe(server.streamReloadAll());
+});
 ```
 
 ## 依赖(Dependencies)
@@ -82,3 +97,5 @@ server.pushAll(); // reload page
 - q
 
 - lodash
+
+- through2

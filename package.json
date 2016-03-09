@@ -1,6 +1,6 @@
 {
   "name": "no-server",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "a node debug server used for front-end developers",
   "preferGlobal": "true",
   "main": "index.js",
@@ -21,6 +21,7 @@
     "event-stream": "^3.3.2",
     "lodash": "^4.5.1",
     "q": "^1.4.1",
+    "through2": "^2.0.1",
     "websocket": "^1.0.22"
   },
   "engines": {
