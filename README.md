@@ -77,13 +77,13 @@ var gulp = require('gulp');
 gulp.task('css', function() {
     gulp.src('css/**/*.css')
         .pipe(gulp.dest('dist/css'))
-        .pipe(server.streamReloadCss());
+        .pipe(NoServer.streamReloadCss());
 });
 
 gulp.task('html', function() {
     gulp.src('views/**/*.html')
         .pipe(gulp.dest('dist/html'))
-        .pipe(server.streamReloadAll());
+        .pipe(NoServer.streamReloadAll());
 });
 ```
 

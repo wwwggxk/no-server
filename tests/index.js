@@ -35,6 +35,7 @@ describe('no-server lib', function () {
                 done();
             });
         });
+
     });
 
     it('should listen 9527 and access default index.html', function (done) {
@@ -107,12 +108,36 @@ describe('no-server lib', function () {
             client.on('connect', function (connection) {
                 connection.on('message', function (message) {
                     instance.close();
+                    connection.close();
                     assert.equal(message.utf8Data, 'css');
                     done();
                 });
 
                 if (connection.connected) {
                     server.reloadCss();
+                }
+            });
+            client.connect('ws://localhost:9527');
+        });
+    });
+
+    it('should get websocket data "css" when server invoke reloadCss by module function',
+            function (done) {
+
+        var server = NoServer.create('./resources');
+        server.start().then(function (instance) {
+            var WebSocketClient = require('websocket').client,
+                client = new WebSocketClient();
+            client.on('connect', function (connection) {
+                connection.on('message', function (message) {
+                    instance.close();
+                    connection.close();
+                    assert.equal(message.utf8Data, 'css');
+                    done();
+                });
+
+                if (connection.connected) {
+                    NoServer.reloadCss();
                 }
             });
             client.connect('ws://localhost:9527');
@@ -129,12 +154,36 @@ describe('no-server lib', function () {
             client.on('connect', function (connection) {
                 connection.on('message', function (message) {
                     instance.close();
+                    connection.close();
                     assert.equal(message.utf8Data, 'all');
                     done();
                 });
 
                 if (connection.connected) {
                     server.reloadAll();
+                }
+            });
+            client.connect('ws://localhost:9527');
+        });
+    });
+
+    it('should get websocket data "all" when server invoke reloadAll by module function',
+            function (done) {
+
+        var server = NoServer.create('./resources');
+        server.start().then(function (instance) {
+            var WebSocketClient = require('websocket').client,
+                client = new WebSocketClient();
+            client.on('connect', function (connection) {
+                connection.on('message', function (message) {
+                    instance.close();
+                    connection.close();
+                    assert.equal(message.utf8Data, 'all');
+                    done();
+                });
+
+                if (connection.connected) {
+                    NoServer.reloadAll();
                 }
             });
             client.connect('ws://localhost:9527');
